@@ -2,7 +2,7 @@
 
 本文讨论二叉树的先中后序遍历，和图的BFS和DFS遍历。
 
-## 二叉树的遍历
+## 二叉树的普通遍历
 
 ###简述
 
@@ -58,7 +58,7 @@ def midorder(root):
         cur = cur.right
 
 def postorder(root): # 翻转版前序遍历
-    stack1 = [root]
+    stack1, stack2 = [root], []
     postorderReversed = []
     while stack1:
         cur = stack1.pop(-1)
@@ -67,6 +67,93 @@ def postorder(root): # 翻转版前序遍历
         stack2.append(cur.val)
     for val in postorderReversed[::-1]: print(val)
 ```
+
+
+
+## 二叉树的层序遍历
+
+**二叉树的层序遍历是面试经常会被考察的知识点，甚至要求当场写出实现过程。**
+
+### 简述
+
+层序遍历所要解决的问题很好理解，就是按二叉树从上到下，从左到右依次打印每个节点中存储的数据。
+
+层序遍历与先序、中序、后序遍历不同。层序遍历用到了队列，而先、中、后序需要用到栈。因此，先、中、后序遍历可以采用递归方式来实现，而层序遍历则没有递归实现。
+
+### 普通层序遍历
+
+[LeetCode 102](https://leetcode.com/problems/binary-tree-level-order-traversal/)
+
+每访问一层，是一层外循环，按顺序访问每个孩子并将孩子的孩子放入队列。循环结束时队列中是所有下一层的孩子节点。下次循环则重复此过程。
+
+```python
+def level(root):
+    queue = [root]
+    while queue:
+        level_size = len(queue)
+        for _ in range(level_size):
+            node = queue.pop(0)
+            print(node.val) # visit
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+```
+
+### 花式层序遍历
+
+#### zig-zag 层序遍历
+
+[LeetCode 103](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/)
+
+思路比较简单，就是不急着输出数据而是保存在叫做cur_layer的list中，每次外循环结束需要换层的时候，我们改变一次出list的方向。
+
+```python
+def level_zigzag(root):
+    queue = [root]
+    reverser = -1
+    while queue:
+        reverser = -reverser
+        cur_layer = []
+        level_size = len(queue)
+        for _ in range(level_size):
+            node = queue.pop(0)
+            cur_layer.append(node)
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+        for node in cur_layer[::reverser]:
+            print(node.val) # visit
+```
+
+#### Vertical 层序遍历
+
+[LeetCode 314](Binary Tree Vertical Order Traversal)
+
+定义一个性质：index，左子节点的index是其根的index-1，右则+1。index相同则属同一列，同列按level排序，所以在外进行一个普通层序遍历。
+
+```python
+def vertical_level(root):
+    queue = [root]
+    columns = {} # index -> [node_values]
+    indexes = {} # node -> node.index
+    indexes[root] = 0
+    while queue:
+        level_size = len(queue)
+        for _ in range(level_size):
+            node = queue.pop(0)
+            index = indexes[node]
+            # Now put(index, node.val) into columns
+            if index not in columns: columns[index] = [node.val]
+            else: columns[index].append(node.val)
+            # push children and record their indexes
+            if node.left: 
+                queue.append(node.left)
+                indexes[node.left] = index - 1
+            if node.right:
+                queue.append(node.right)
+                indexes[node.right] = index + 1
+        for k, v in sorted(columns.items()): print(v)
+```
+
+
 
 ## 图的顶点遍历
 
@@ -160,4 +247,5 @@ def BFS_i(start):
 - [图的遍历之 深度优先搜索和广度优先搜索](https://www.cnblogs.com/skywang12345/p/3711483.html)
 - [Python实现图的DFS（递归和非递归）和BFS](https://blog.csdn.net/weixin_40314737/article/details/80893507)
 - [百度百科 广度优先遍历](https://baike.baidu.com/item/%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86)
+- [二叉树的层序遍历详细讲解（附完整C++程序）](https://blog.csdn.net/FX677588/article/details/74276513)
 
