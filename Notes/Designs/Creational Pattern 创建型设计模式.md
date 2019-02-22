@@ -316,10 +316,97 @@ myProduct.use();
 
 简单的单例不是线程安全的，需要利用线程锁来实现线程安全的单例。
 
+### 实现
+
+- 线程不安全，延迟实例化。好处是如果没用到就不会实例化，从而节约资源。
+
+```java
+// 线程不安全，延迟实例化
+public class SingletonThreadUnsafe {
+    
+    private static SingletonThreadUnsafe instance; // 私有静态变量，记录本类唯一实例
+    
+    private SingletonThreadUnsafe() {
+        // 初始化实例，是私有函数所以只有本类内才能调用构造
+    }
+    
+    public static Singleton getInstance() { // 程序中任何地方都能调用此函数来获取唯一实例
+        // 调用方法 SingletonThreadUnsafe.getInstance();
+        if (instance == null) { // 延迟实例化，即在需要使用时才实例化
+            instance = new SingletonThreadUnsafe();
+        }
+        return instance;
+    }
+}
+```
+
+- 线程安全，急切实例化。如想实现单例的类在创建和运行时的**负担并不繁重**可考虑。
+
+```java
+// 线程安全，急切实例化
+public class SingletonThreadSafe {
+    
+    private static SingletonThreadSafe instance = new SingletonThreadSafe();
+    // 在且仅在静态初始化中就创建单例，也就避免多线程的问题
+    
+    private SingletonThreadSafe(){}
+    
+    public static SingletonThreadSafe getInstance() {
+        return instance;
+    }
+}
+```
+
+- 线程安全，线程锁。会让线程阻塞时间过长，因此该方法有性能问题，不推荐使用。
+
+```java
+// 线程安全，延迟实例化，线程锁
+......
+public static synchronized SingletonThreadSafe getInstance() {
+    if (instance == null) {
+        instance = new SingletonThreadSafe();
+    }
+    return uniqueInstance;
+}
+......
+```
+
+- 线程安全，双重校验锁。
+
+```java
+// 线程安全，延迟实例化，双重校验锁
+public class SingletonThreadSafe {
+    
+    private volatile static SingletonThreadSafe instance;
+    /* volatile确保当instance被初始化成实例时，多个线程正确的处理instance变量。
+    创建instance不具备原子性，JVM指令重排会潜在导致某线程创建instance尚未完成时，另一个线程未检测到instance于是也进行创建。
+    当共享变量被volatile修饰时，会保证修改的值立即被更新到主存，其他线程需读取时会去内存中读取新值。
+    另外，通过synchronized和Lock也能够保证可见性。
+    */
+    // more about volatile: https://www.cnblogs.com/dolphin0520/p/3920373.html
+    
+    private SingletonThreadSafe() {}
+    
+    public static Singleton getInstance() {
+        if (instance == null) { // 可能同时被两个线程执行并判true
+            synchronized (Singleton.class) {
+                if (instance == null) { // 双重校验锁
+                    instance = new SingletonThreadSafe;
+                }
+            }
+        return instance;
+        }
+    }
+}
+```
+
+
+
 ## 参考资料
 
 - [图说设计模式：创建型模式](https://design-patterns.readthedocs.io/zh_CN/latest/creational_patterns/creational.html)
-
 - [CyC2018/CS-Notes/设计模式](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)
 - [工厂模式 看这一篇就够了](https://www.jianshu.com/p/83ef48ce635b)
 - [建造者模式（Builder Pattern）- 最易懂的设计模式解析](https://blog.csdn.net/carson_ho/article/details/54910597)
+- [单例模式](https://www.jianshu.com/p/b3e5cd2004e8)
+- [Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
