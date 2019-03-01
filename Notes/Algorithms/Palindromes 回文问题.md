@@ -40,7 +40,58 @@
    - `my`：已知的、右边界最大的回文子串的左边界。
    - `j`：`i`关于`id`的对称点。
 
-   ![Demo](https://www.felix021.com/blog/attachment.php?fid=448)
+   ![Demo](https://raw.githubusercontent.com/DuskPiper/ProjChengdu-Coder-Notes/master/Illustration/ManachersAlgorithmDemo1.png)
+
+   观察上图中，理论上互相对称的绿色框区间，那么就有下面的结论：
+
+   ```pseudocode
+   一、对任意 i < mx 有：
+   P[i] >= min(
+   	p[2 * id - i], // 如P[j]回文未超过P[id]回文左边界，则i有一个对称回文不超过右边界（对称性）
+       mx - i // 如果P[j]回文超过P[id]回文左边界，则P[i]所取对称回文只能截取mx以内的部分
+   )
+   // 值得一提的是，示意图里对应第二种情况，所以截取了P[j]回文的绿框部分
+   
+   二、对于 i >= mx 则：
+   我们不了解任何有效信息，只能按部就班从P[i] = 1开始扫描计算，也就是：
+   P[i] >= 1
+   ```
+
+   **所以算法的精髓在：**对给定`P[i]`，知道一个最小值，于是节省扫描其最大回文的时间（赢在起跑线）
+
+### 实现
+
+```java
+String question = readQuestion();
+List s = new ArrayList<Character>();
+// Now rebuild
+s.add("$");
+s.add("#")
+for (int i = 0; i < question.length; i ++) {
+	s.add(question.charAt(i));
+    s.add("#")
+}
+// Now find ans
+List p = new ArrayList<Integer>(){1, 1}; // 第一个1是$对应的占位。第二个1是string第一项。
+int id = 1;
+int mx = 2;
+int maxlen = 0;
+for (int i = 2; i < s.size(); i ++) {
+    p[i] = mx >= i ? min(p[2 * id - i], mx - i) : 1; // 得到P[i]的最小值
+    while (s[i + p[i]] == s[i - p[i]]) p[i] ++; // 暴力向两边扩张
+    // 此时已经得到了p[i]的正确值
+    if (i + p[i] > mx) { // 检测并更新“已知的、右边界最大的回文子串”
+        mx = i + p[i];
+        id = i;
+    }
+    if (p[i] - 1 > maxlen) {
+        maxlen = p[i] - 1;
+    }
+}
+// 此时maxlen即是答案
+```
+
+
 
 ## 参考资料
 

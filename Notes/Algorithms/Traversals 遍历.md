@@ -9,10 +9,10 @@
 遍历的前中后序其实指的是根节点所在的先后次序中的位置，而左一定先于右。
 
 - 前序遍历：**根节点**->左子树->右子树
-
 - 中序遍历：左子树->**根节点**->右子树
-
 - 后序遍历：左子树->右子树->**根节点**
+
+对于BST，中序遍历可以得到其值自然顺序
 
 ### 递归实现
 
@@ -22,10 +22,10 @@ def preorder(root):
     preorder(root.left)
     preorder(root.right)
 
-def midorder(root):
-    midorder(root.left)
+def inorder(root):
+    inorder(root.left)
     print(root.val)
-    midorder(root.right)
+    inorder(root.right)
     
 def postorder(root):
     postorder(root.left)
@@ -41,12 +41,12 @@ def postorder(root):
 def preorder(root):
     stack = [root]
     while stack:
-        cur = stack.pop(0)
+        cur = stack.pop(-1)
         print(cur.val)
         if cur.right: stack.push(cur.right)
         if cur.left: stack.push(cur.left)
         
-def midorder(root):
+def inorder(root):
     stack = []
     cur = root
     while stack or cur:
