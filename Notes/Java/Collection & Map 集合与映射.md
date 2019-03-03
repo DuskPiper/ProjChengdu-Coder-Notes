@@ -8,6 +8,51 @@ Collection集合类主要负责保存、盛装其他数据，因此集合类也�
 
 Collection和Map的区别在于容器中每个位置保存的元素个数，Collection 每个位置只能保存一个元素(对象)，Map保存的是"键值对"，就像一个小型数据库。我们可以通过"键"找到该键对应的"值"。
 
+- Java集合框架基本接口/类框架层次：
+
+```java
+java.util.Collection [I]
+    +--java.util.List [I]
+       +--java.util.ArrayList [C]    
+       +--java.util.LinkedList [C]  
+       +--java.util.Vector [C]    // 线程安全
+          +--java.util.Stack [C]  // 线程安全
+    +--java.util.Set [I]                   
+       +--java.util.HashSet [C]      
+       +--java.util.SortedSet [I]    
+          +--java.util.TreeSet [C]    
+    +--Java.util.Queue[I]
+        +--java.util.Deque[I]   
+        +--java.util.PriorityQueue[C]  
+java.util.Map [I]
+    +--java.util.SortedMap [I]
+       +--java.util.TreeMap [C]
+    +--java.util.Hashtable [C]   // 线程安全
+    +--java.util.HashMap [C]
+    +--java.util.LinkedHashMap [C]
+    +--java.util.WeakHashMap [C]
+```
+
+- 复杂度横向比较（[更完整的分析](http://infotechgems.blogspot.com/2011/11/java-collections-performance-time.html)）
+
+```pseudocode
+Data Structure           | Add      | Contains | Remove   | Get      | Based On     |
+-------------------------------------------------------------------------------------
+Array                    | O(n)     | O(n)     | O(n)     | O(1)     |              |
+ArrayList                | O(1)     | O(n)     | O(n)     | O(1)     | Array        |
+LinkedList               | O(1)     | O(n)     | O(1)     | O(n)     | LinkedList   |
+Stack                    | O(1)     |          | O(1)     |          |              |
+Queue                    | O(1)     |          | O(1)     |          |              |
+PriorityQueue            | O(log n) |          | O(log n) |          | PriorityHeap |
+ArrayDequeue             | O(1)     |          | O(1)     |          | Array        |
+HashSet                  | O(1)     | O(1)     | O(1)     |          | Hashtable    |
+LinkedHashSet            | O(1)     | O(1)     | O(1)     |          | Hashtble+LinkedList
+TreeSet                  | O(log n) | O(log n) | O(log n) |          | RedBlackTree |
+Hashtable                | O(1)     | (key)O(1)| O(1)     | O(1)     |              |
+HashMap                  | O(1)     | (key)O(1)| O(1)     | O(1)     | Hashtable    |
+TreeMap                  | O(log n) | O(log n) | O(log n) | O(log n) | RedBlackTree |
+```
+
 
 
 ## Collection 集合
@@ -17,6 +62,8 @@ Collection和Map的区别在于容器中每个位置保存的元素个数，Coll
 整个集合框架就围绕一组标准接口而设计。
 
 ![集合继承关系](https://raw.githubusercontent.com/DuskPiper/ProjChengdu-Coder-Notes/master/Illustration/%E9%9B%86%E5%90%88%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.jpg)
+
+
 
 ### 接口
 
@@ -89,14 +136,30 @@ Collection和Map的区别在于容器中每个位置保存的元素个数，Coll
 
 ##### `PriorityQueue`
 
-- 通过二叉小顶堆实现，可以用一棵完全二叉树表示。
+- 通过二叉小顶堆(Priority heap, Binary Min-heap)实现，可以用一棵完全二叉树表示。
 - 插入和删除的时间复杂度是`O(logN)`。
 - 实现优先队列。优先队列的作用是能保证每次取出的元素都是队列中权值最小的。
 - 默认通过自然顺序排序，也就是数字默认是小的在队列头，字符串则按字典序排列。可以传入自定义的`Comparator`。
 
 ####Iterator
 
-- Iterator可以删除访问的当前元素，而for循环中执行`remove()`删除操作可能带来 `ConcurrentModificationException`。
+- 提供遍历任何Collection的接口。
+
+- 可以从一个Collection中使用迭代器方法来获取迭代器实例。
+
+- 迭代器取代了Java集合框架中的Enumeration。
+
+- Iterator可以删除访问的当前元素，而for循环中执行`remove()`删除操作可能带来 `ConcurrentModificationException`。所以不应当在for循环中移除元素，正确的移除集合元素的操作是：
+
+  ```java
+  Iterator<Integer> itr = list.iterator();
+  while(itr.hasNext()) {
+     // do something
+     itr.remove();
+  }
+  ```
+
+  
 
 ## Map 映射
 
@@ -111,7 +174,7 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - `implements SortedMap`，元素有序。支持有序性操作，如`ceiling()` `floor()`。
 - 底层基于红黑树实现。
 - 与TreeSet相同，可以基于自然排序，也可以传入自定义的`Comparator`。
-- 如果使用自定义类作为TreeMap的key，则应重写该类的equals()方法和compareTo()方法时应保持一致的返回结果：两个key通过equals()方法比较返回true时，它们通过compareTo()方法比较应该返回0。如果不一致，TreeMap与Map接口的规则会冲突。
+- 如使用自定义类作为TreeMap的key，则应重写该类的equals()和compareTo()方法时应保持一致的返回：两个key通过equals()方法比较返回true时，它们通过compareTo()方法比较应该返回0。如果不一致，TreeMap与Map接口的规则会冲突。用JDK提供的不可变类作为Map的key，可以避免自己实现hashCode()和equals()。
 
 ##### `HashMap`
 
@@ -120,6 +183,7 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - 如果大量碰撞导致LinkedList过长(`>= TREEIFY_THRESHOLD`)，则将其转换为红黑树。
 - 如果bucket满了(`> loadFactor * capacity​`)，就要resize。此时扩容100%并重新hash计算index位置。
 - 非同步因此非线程安全。可以使用ConcurrentHashMap来保证线程安全。
+- HashMap使用Key对象的hashCode()和equals()方法决定键值对的索引。当从HashMap中获取值，这些方法也会被用到。用JDK提供的不可变类作为Map的key，可以避免自己实现hashCode()和equals()。
 
 ##### `LinkedHashMap`
 
@@ -143,7 +207,19 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 ###Collections和Array的区别
 
 - 数组长度在初始化时指定，只能保存定长的数据。而集合可以保存数量不确定的数据；且能保存具有映射关系的数据（即关联数组，键值对 key-value）。
+
 - 数组的元素可以是基本类型或者对象；集合只能保存对象（实际上是保存对象的引用）。基本数据类型的变量要转换成对应的包装类才能放入集合。
+
+- List类和Array的互转：
+
+  ```java
+  List list = Arrays.asList(ArrayUtils.toObject(array)); // 基本类一定要转封装类
+  
+  Integer[] l = (Integer[]) list.toArray(new Integer[list.size()]); // 封装类无法转基本类
+  // 要实现转成int[]的话需要使用for循环或Iterator循环
+  ```
+
+  
 
 ### Set和List的区别
 
@@ -173,6 +249,19 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 
 - 两者都是线程不安全的，都可以使用 `Collections.synchronizedList(List<E> list)` 方法生成一个线程安全的 List。
 
+- 复杂度比较
+
+- ```pseudocode
+                     | Arraylist | LinkedList |
+   --------------------------------------------
+   get(index)        |    O(1)   |   O(n)     |
+   add(E)            |    O(n)   |   O(1)     |
+   add(E, index)     |    O(n)   |   O(n)     |
+   remove(index)     |    O(n)   |   O(n)     |
+   Iterator.remove() |    O(n)   |   O(1)     |
+   Iterator.add(E)   |    O(n)   |   O(1)     |
+  ```
+
 ### 存放`null`的能力
 
 - List可以存储null，添加几个就存储几个。
@@ -193,10 +282,27 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - HashMap内部使用`hash(Object key)`扰动函数对 key 的 `hashCode` 进行扰动后作为 `hash` 值。HashTable 是直接使用 key 的 `hashCode()` 返回值作为 hash 值。
 - HashMap默认容量为 $2^4$ 且容量一定是 $2^n$；HashTable 默认容量是11，不一定是 $2^n$。
 
+### Iterator和ListIterator区别
+
+- 可以使用Iterator来遍历Set和List集合，而ListIterator只能遍历List。
+- Iterator只可以向前遍历，而LIstIterator可以双向遍历。
+- ListIterator继承自Iterator接口，并添加了额外功能，比如添加元素、替换元素、获取前后元素索引。
+
+### HashMap和WeakHashMap区别
+
+- 对于WeakHashMap：
+
+  `private static class Entry<K,V> extends WeakReference<Object> implements Map.Entry<K,V>`
+
+  WeakHashMap的Entry实现了WeakReference类。**除了自身有对key的引用外，此key没有其他引用那么此map会自动丢弃此值**。
+
+- 解决了HashMap存储极大量数据可能导致内存溢出的问题，但相对应的如果不使用某个键值对则会失去它。
+
 
 
 ##References 参考资料
 
+- [Java Collections – Performance (Time Complexity)](http://infotechgems.blogspot.com/2011/11/java-collections-performance-time.html)
 - [由浅入深理解java集合(一)——集合框架 Collection、Map](https://www.jianshu.com/p/589d58033841)
 - [40个Java集合面试问题和答案](http://www.importnew.com/15980.html)
 - [Java 集合框架 - RUNNOB](http://www.runoob.com/java/java-collections.html)
@@ -208,3 +314,5 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - [由浅入深理解java集合(五)——集合 Map](https://www.jianshu.com/p/0580eb808eea)
 - [Java HashMap工作原理及实现](https://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/)
 - [Map 综述（二）：彻头彻尾理解 LinkedHashMap](https://blog.csdn.net/justloveyou_/article/details/71713781)
+- [关于Java集合最被关注的10 个问题](https://blog.csdn.net/suifeng3051/article/details/39010863)
+- [WeakHashMap和HashMap的区别](https://blog.csdn.net/u010412719/article/details/52035723)
