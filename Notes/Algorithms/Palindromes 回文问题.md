@@ -63,7 +63,7 @@
 
 ```java
 String question = readQuestion();
-List s = new ArrayList<Character>();
+List<Character> s = new ArrayList<Character>();
 // Now rebuild
 s.add("$");
 s.add("#")
@@ -72,7 +72,7 @@ for (int i = 0; i < question.length; i ++) {
     s.add("#")
 }
 // Now find ans
-List p = new ArrayList<Integer>(){1, 1}; // 第一个1是$对应的占位。第二个1是string第一项。
+List<Integer> p = new ArrayList<Integer>(){1, 1}; // 第一个1是$对应的占位。第二个1是string第一项。
 int id = 1;
 int mx = 2;
 int maxlen = 0;
