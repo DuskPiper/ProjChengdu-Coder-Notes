@@ -182,7 +182,7 @@ def shell_sort(lst):
 
 ### 简述
 
-堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。左右子节点之间无固定大小关系。
+堆是具有以下性质的完全二叉树：每个结点的值都>=其左右孩子结点的值，称为大顶堆；或每个结点的值<=其左右孩子结点的值，称为小顶堆。左右子节点之间无固定大小关系。
 
 堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是一种选择排序，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序。
 
@@ -191,13 +191,41 @@ def shell_sort(lst):
 以升序为例，将大顶堆按层放入数列后，会满足：
 
 ```psudocode
-arr[i] >= arr[2i+1] && arr[i] >= arr[2i+2]  
+arr[i] >= arr[2i+1] && arr[i] >= arr[2i+2]
+// 2i+1和2i+2分别是i对应元素的左、右儿子
 ```
 
-算法实现步骤是：[图文介绍](https://www.cnblogs.com/chengxiao/p/6129630.html)
+算法实现步骤是：[图文介绍](https://www.cnblogs.com/chengxiao/p/6129630.html) [视频介绍](https://www.bilibili.com/video/av18980178/)
 
 1. 将给定无序序列构造成一个大顶堆（降序则为小顶堆）。
-2. 将堆顶元素与末尾元素交换，以此将最大元素"沉"到数组末端。此时当前最大元素被记录，可理解为放入另一个已排序序列。
+2. 交换堆顶与末尾，以此将最大元素"沉"到数组末。此时当前最大元素被记录，可理解为放入另一已排序序列。
 3. 重新调整结构，使其满足堆定义。此时顶部最大的元素是排除了之前更大元素的最大。
-4. 继续交换堆顶元素与当前末尾元素，反复执行调整+交换步骤，直到整个序列有序。
+4. 继续交换堆顶与当前末尾，反复调整+交换，直到整个序列有序。
+
+###实现
+
+```python
+def heap_sort(lst):
+    def sift_down(start, end):
+        # 调整以满足最大堆
+        root = start
+        while True:
+            child = 2 * root + 1 # 左子
+            if child > end: break
+            if child + 1 <= end and lst[child] < lst[child + 1]: child += 1
+            if lst[root] < lst[child]:
+                lst[root], lst[child] = lst[child], lst[root]
+                root = child
+            else break
+    
+    # 创建最大堆
+    for start in xrange((len(lst) - 2) // 2, -1, -1):
+        sift_down(start, len(lst) - 1)
+        
+    #堆排序
+    for end in xrange(len(lst) - 1, 0, -1):
+        lst[0], lst[end] = lst[end], lst[0]
+        sift_down(0, end - 1)
+    return lst
+```
 
