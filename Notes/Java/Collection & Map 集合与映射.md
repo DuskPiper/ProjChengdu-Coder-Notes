@@ -116,8 +116,8 @@ TreeMap                  | O(log n) | O(log n) | O(log n) | O(log n) | RedBlackT
 
 ##### `HashSet`
 
-- 基于**HashMap**实现，底层采用HashMap保存元素。
-- 通过检查元素的`hashCode`来实现重复检查。
+- 基于HashMap实现，底层采用HashMap保存元素。
+- 通过检查元素的 `hashCode` 来实现重复检查，如果相同，再检查是否满足 `equals` 或者 `==` 。
 - 支持`O(1)`快速查找，但不支持有序性操作。
 - 失去插入顺序信息，用Iterator遍历的结果顺序是不定的。
 
@@ -156,6 +156,15 @@ TreeMap                  | O(log n) | O(log n) | O(log n) | O(log n) | RedBlackT
   while(itr.hasNext()) {
      // do something
      itr.remove();
+  }
+  ```
+
+- 使用Iterator移除元素，一定要先 `next()` 再 `remove()` ，不然会有 `NoSuchElementException` 。
+
+  ```java
+  while (it.hasNext()) {
+  	it.next();
+  	it.remove();
   }
   ```
 
@@ -199,6 +208,34 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - 是线程安全版的HashMap，但效率很低，因此采用同样线程安全的ConcurrentHashMap代替。
 - 继承自Dictionary类。
 - 不允许键或者值为`null`。
+
+### HashMap Details
+
+#### Hashing 哈希函数
+
+- `public int hashCode()` 是java.lang.Object类中的方法。
+- 相等的对象(满足 `equals()` )一定有相等的哈希码。但两个对象的hashCode相同，它们不一定相同。
+- 几种简单实现：线性函数直接定址，除留余数，取平方值中间几位，关键字分段后取和(舍进位)，随机函数。
+
+#### Collision 冲突
+
+- A collision will occur on Hashtable or HashMap when `hashCode()` method of two different key objects will return same values.
+
+- 冲突的Entry都放在同一个桶(Bucket)中待遍历寻找。对于Java1.8之前，桶均为链表结构。在Java1.8及之后，桶会在超过树形阈值( `TREEIFY_THRESHOLD = 8` )后重构成红黑树结构，但只有ConcurrentHashMap, LinkedHashMap和HashMap有此新功能。
+
+#### Size Increase 扩容
+
+- 默认容量16( `1<<<4` )，最大容量2^30( `1<<<30` )。默认加载因子(Load Factor)0.75。
+- 阈值(threshold)指扩容的容量阈值。`threshold = cur_capacity * load_factor` 
+- 树形阈值( `TREEIFY_THRESHOLD = 8` )指变桶为红黑树结构的最小阈值。默认为8，桶容量低于树形阈值时采用LinkedList存储，超出则采用树结构存储。
+- 非树形阈值( `UNTREEIFY_THRESHOLD = 6` )指变桶为链表的最大阈值。
+- 树形最小容量 ( `MIN_TREEIFY_CAPACITY = 64` )指桶可能是树的哈希表的最小容量。避免扩容时的冲突。
+- 每次添加元素后都会比对容量和阈值，并决定是否扩容。
+- 哈希表扩容时，容量、阈值均**翻倍**。
+
+- 如之前该桶的节点类型是树，新哈希表里当前桶也要变成树。
+- 复制给新哈希表中需要重新索引(rehash)。
+- **扩容开销很大，因此可以的话在初始化HashMap时就指定长度以避免频繁扩容。**
 
 
 
@@ -316,3 +353,7 @@ Map保存具有映射关系的数据，因此Map集合里保存着两组数，�
 - [Map 综述（二）：彻头彻尾理解 LinkedHashMap](https://blog.csdn.net/justloveyou_/article/details/71713781)
 - [关于Java集合最被关注的10 个问题](https://blog.csdn.net/suifeng3051/article/details/39010863)
 - [WeakHashMap和HashMap的区别](https://blog.csdn.net/u010412719/article/details/52035723)
+- [重温数据结构：哈希 哈希函数 哈希表](https://blog.csdn.net/u011240877/article/details/52940469)
+- [Java提高篇——equals()与hashCode()方法详解](https://www.cnblogs.com/Qian123/p/5703507.html)
+- [Java 集合深入理解（16）：HashMap 主要特点和关键方法源码解读](https://blog.csdn.net/u011240877/article/details/53351188)
+- [How does Java HashMap or LinkedHahsMap handles collisions?](https://javarevisited.blogspot.com/2016/01/how-does-java-hashmap-or-linkedhahsmap-handles.html)
