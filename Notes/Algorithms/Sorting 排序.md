@@ -47,13 +47,13 @@ def quicksort_r_i(lst):
     if len(lst) <= 1: return lst
     def swap(i, j): lst[i], lst[j] = lst[j], lst[i]
     def partition(l, r, pivot_index): # 整理成pivot前后大小关系分别一致
-        swap[pivot_index, r] # 暂时移动pivot到末尾
+        swap(pivot_index, r) # 暂时移动pivot到末尾
         ptr, pivot = l, lst[r] # ptr相当于边界，ptr前的值一定小于pivot
         for i in range(l, r - 1):
             if lst[i] < pivot:
-                swap[ptr, i] # 遇到小于pivot的值则swap到ptr前面去
+                swap(ptr, i) # 遇到小于pivot的值则swap到ptr前面去
                 ptr += 1
-        swap[ptr, r] # 归还pivot
+        swap(ptr, r) # 归还pivot
         return ptr # 返回当前pivot index
     def recurse(l, r): # 递归地进行partition子序列大小为1或0
         if l < r:
