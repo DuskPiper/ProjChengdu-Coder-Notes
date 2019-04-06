@@ -124,6 +124,38 @@
 
 ### 格雷码 Gray Code
 
+格雷码（循环二进制单位距离码）是任意两个相邻数的代码只有一位二进制数不同的编码，它与奇偶校验码同属可靠性编码。格雷码能避免讯号传送错误。
+
+#### 格雷码与二进制数
+
+- 二进制数转格雷码
+
+  `G(n) = B(n+1) XOR B(n) `  即 `G(n) = B(n+1) + B(n)`
+
+  ```c++
+  unsigned int binaryToGray(unsigned int x) {
+    return x ^ (x >> 1);
+  }
+  ```
+
+- 格雷码转二进制数
+
+  `B(n) = B(n+1) - G(n) `
+
+  ```c++
+  unsigned int grayToDecimal(unsigned int x) {
+    unsigned int mask;
+    for (mask = x >> 1; mask != 0; mask = mask >> 1) {
+      x = x ^ mask;
+    }
+    return x;
+  }
+  ```
+
+#### LeetCode
+
+- [LeetCode 89. Gray Code](https://leetcode.com/problems/gray-code/)
+
 
 
 
@@ -135,3 +167,5 @@
 - [可能是最通俗易懂的 Java 位操作运算讲解](https://blog.csdn.net/briblue/article/details/70296326)
 - [Java中带符号右移和无符号右移的区别](https://blog.csdn.net/zerolaw/article/details/81081823)
 - [优秀程序员不得不知道的20个位运算技巧](https://blog.csdn.net/zmazon/article/details/8262185)
+- [格雷码 - WikiPedia](https://zh.wikipedia.org/wiki/%E6%A0%BC%E9%9B%B7%E7%A0%81)
+- [Convertion of grey code and binary 格雷码和二进制数之间的转换](http://www.cnblogs.com/grandyang/p/4315607.html) 

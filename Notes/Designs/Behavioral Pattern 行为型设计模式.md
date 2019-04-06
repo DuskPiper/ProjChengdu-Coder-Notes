@@ -22,7 +22,9 @@
 11. Visitor 访问者模式
 12. Null 空对象
 
-## Chain of Responsibility 责任链模式
+
+
+## Chain of Responsibility 责任链
 
 ### 简述
 
@@ -115,6 +117,8 @@ deleter.handle(request2); // deleter called
 - [java.util.logging.Logger#log()](http://docs.oracle.com/javase/8/docs/api/java/util/logging/Logger.html#log%28java.util.logging.Level,%20java.lang.String%29)
 - [Apache Commons Chain](https://commons.apache.org/proper/commons-chain/index.html)
 - [javax.servlet.Filter#doFilter()](http://docs.oracle.com/javaee/7/api/javax/servlet/Filter.html#doFilter-javax.servlet.ServletRequest-javax.servlet.ServletResponse-javax.servlet.FilterChain-)
+
+
 
 ## Command 命令
 
@@ -217,6 +221,8 @@ for(int i = 0, int i < Integer.MAX_VALUE; i ++) { // 按爆遥控器
 - [Netflix Hystrix](https://github.com/Netflix/Hystrix/wiki)
 - [javax.swing.Action](http://docs.oracle.com/javase/8/docs/api/javax/swing/Action.html)
 
+
+
 ##Interpreter 解释器
 
 ### 简述
@@ -305,7 +311,13 @@ class ConcreteAggregate implements Aggregate {
 - [java.util.Iterator](http://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html)
 - [java.util.Enumeration](http://docs.oracle.com/javase/8/docs/api/java/util/Enumeration.html)
 
-# !!THIS PAGE IS INCOMPLETE
+
+
+# Mediator 中介者
+
+
+
+
 
 
 
