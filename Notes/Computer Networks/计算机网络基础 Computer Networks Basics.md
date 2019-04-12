@@ -177,7 +177,21 @@ OSI是Open System Interconnect的缩写，其将TCP的**应用层**拆分为三�
 
 ##3 网络层 Network Layer
 
-#### 
+网络层是整个互联网的核心，应当让网络层尽可能简单。网络层向上只提供简单灵活的、无连接的、尽最大努力交互的数据报服务。使用 IP 协议，可以把异构的物理网络连接起来，使得在网络层看起来好像是一个统一的网络。
+
+网络层提供[路由](https://zh.wikipedia.org/wiki/%E8%B7%AF%E7%94%B1)和寻址的功能，使两终端系统能互连且决定最佳路径，并具有一定的拥塞控制和流量控制的能力。由于TCP/IP协议体系中的网络层功能由IP协议规定和实现，故又称IP层。网络层也是[TCP/IP](https://zh.wikipedia.org/wiki/TCP/IP%E5%8D%8F%E8%AE%AE%E6%97%8F)模型中的网际层。
+
+与 IP 协议配套使用的还有三个协议：
+
+- 地址解析协议 ARP（Address Resolution Protocol）
+- 网际控制报文协议 ICMP（Internet Control Message Protocol）
+- 网际组管理协议 IGMP（Internet Group Management Protocol）
+
+### IP报文
+
+IP报文是在网络层传输的数据单元，也叫IP数据报。
+
+
 
 # References
 
@@ -186,3 +200,5 @@ OSI是Open System Interconnect的缩写，其将TCP的**应用层**拆分为三�
 - [一张图了解TCP/IP五层网络模型](https://blog.csdn.net/zhshulin/article/details/62888061)
 - [互联网协议入门（一） - 阮一峰的网络日志](http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html)
 - [计算机网络原理笔记（三、数据链路层）](https://blog.csdn.net/leiflyy/article/details/50623979)
+- [WikiPedia - 网络层](<https://zh.wikipedia.org/wiki/%E7%BD%91%E7%BB%9C%E5%B1%82>)
+- 
