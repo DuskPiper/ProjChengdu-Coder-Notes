@@ -295,6 +295,8 @@ IP 地址的编址方式经历了三个历史阶段：
 
 ##### 首部格式
 
+![TCP首部](<https://raw.githubusercontent.com/DuskPiper/ProjChengdu-Coder-Notes/master/Illustration/TCP%E9%A6%96%E9%83%A8.png>)
+
 
 
 
