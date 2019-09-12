@@ -313,11 +313,355 @@ class ConcreteAggregate implements Aggregate {
 
 
 
-# Mediator 中介者
+## Mediator 中介者
+
+ ### 简述
+
+集中相关对象之间复杂的沟通和控制方式。用中介对象封装一系列复杂的对象交互，使各对象毋需显式地相互引用，从而使其耦合松散，且可以独立地改变它们之间的交互。
+
+### 实现
+
+```java
+public abstract class Collegue {
+  public abstract void onEvent(Mediator mediator)
+}
+
+public abstract class Mediator {
+    public abstract void doEvent(String eventType);
+}
+
+
+public class Developer extends Collegue {
+  @Override
+  public void onEvent(Mediator mediator) {
+    mediator.doEvent("Programmer");
+  }
+}
+
+public class Manager extends Collegue {
+  @Override
+  public void onEvent(Mediator mediator) {
+    mediator.doEvent("Manager");
+  }
+}
+```
 
 
 
+## Memento 备忘录
 
+### 简述
+
+在不违反封装的情况下获得对象的内部状态，并在该对象之外保存这个状态，从而在需要时可以将对象恢复到最初状态。
+
+### 实现
+
+```java
+public class Memento {
+   private String state;
+ 
+   public Memento(String state){
+      this.state = state;
+   }
+ 
+   public String getState(){
+      return state;
+   }  
+}
+
+public class Originator {
+   private String state;
+ 
+   public void setState(String state){
+      this.state = state;
+   }
+ 
+   public String getState(){
+      return state;
+   }
+ 
+   public Memento saveStateToMemento(){
+      return new Memento(state);
+   }
+ 
+   public void getStateFromMemento(Memento Memento){
+      state = Memento.getState();
+   }
+}
+
+public class CareTaker {
+   private List<Memento> mementoList = new ArrayList<Memento>();
+ 
+   public void add(Memento state){
+      mementoList.add(state);
+   }
+ 
+   public Memento get(int index){
+      return mementoList.get(index);
+   }
+}
+
+public class Demo {
+   public static void main(String[] args) {
+      Originator originator = new Originator();
+      CareTaker careTaker = new CareTaker();
+     
+      originator.setState("State #1");
+      originator.setState("State #2");
+      careTaker.add(originator.saveStateToMemento());
+      originator.setState("State #3");
+      careTaker.add(originator.saveStateToMemento());
+      originator.setState("State #4");
+ 
+      System.out.println("Current State: " + originator.getState());    
+      originator.getStateFromMemento(careTaker.get(0));
+      System.out.println("First saved State: " + originator.getState());
+      originator.getStateFromMemento(careTaker.get(1));
+      System.out.println("Second saved State: " + originator.getState());
+   }
+}
+```
+
+
+
+## Observer 观察者
+
+### 简述
+
+建立一种对象与对象之间的依赖关系，一个对象发生改变时将自动通知其他对象，其他对象将相应做出反应。
+
+在此，发生改变的对象称为观察目标，而被通知的对象称为观察者，一个观察目标可以对应多个观察者，而且这些观察者之间没有相互联系，可以根据需要增加和删除观察者，使得系统更易于扩展。
+
+观察者模式又称作发布-订阅（Publish/Subscribe）模式、模型-视图（Model/View）模式、源-监听（Source/Listener）模式或从属者（Dependents）模式。
+
+![Obeserver 观察者设计模式](../../Illustration/Obeserver 观察者设计模式.jpg)
+
+### 实现
+
+```java
+public class Student {
+   
+   private List<Observer> observers = new ArrayList<Observer>();
+   private int state;
+ 
+   public int getState() {
+      return state;
+   }
+ 
+   public void setState(int state) {
+      this.state = state;
+      notifyAllObservers();
+   }
+ 
+   public void attach(Observer observer){
+      observers.add(observer);      
+   }
+ 
+   public void notifyAllObservers(){
+      for (Observer observer : observers) {
+         observer.update();
+      }
+   }  
+}
+
+public abstract class Observer {
+   protected Subject subject;
+   public abstract void update();
+}
+
+public class StudyObserver extends Observer{
+ 
+   public StudyObserver(Subject subject){
+      this.subject = subject;
+      this.subject.attach(this);
+   }
+ 
+   @Override
+   public void update() {
+      System.out.println("Study info:" + Boolean.toString("Study".equals(subject.state))); 
+   }
+}
+
+public class GamingObserver extends Observer{
+ 
+   public GamingObserver(Subject subject){
+      this.subject = subject;
+      this.subject.attach(this);
+   }
+ 
+   @Override
+   public void update() {
+      System.out.println("Gaming info:" + Boolean.toString("Gaming".equals(subject.state))); 
+   }
+}
+```
+
+
+
+## State 状态
+
+### 简述
+
+允许对象在内部状态改变时改变它的行为，对象看起来好像修改了它所属的类。对象的行为依赖于其状态/属性，且可以根据它的状态改变而改变它的相关行为时。
+
+### 实现
+
+```java
+public interface State {
+   public void doAction(Context context);
+}
+
+public class StartedState implements State {
+ 
+   public void doAction(Context context) {
+      System.out.println("Object is started");
+      context.setState(this); 
+   }
+}
+
+public class StoppedState implements State {
+ 
+   public void doAction(Context context) {
+      System.out.println("Object is stopped");
+      context.setState(this); 
+   }
+}
+
+@Data  // getter setter
+public class Context {
+   private State state;
+ 
+   public Context(){
+      state = null;
+   }
+}
+
+public class Demo {
+   public static void main(String[] args) {
+      Context context = new Context();
+ 
+      new StartState().doAction(context);
+      new StopState().doAction(context);
+   }
+}
+```
+
+
+
+## Strategy 策略
+
+### 简述
+
+定义一系列算法并分别封装，使它们可以互换，调用时可根据实际情况在算法中作选择。
+
+### 实现
+
+太简单了，略
+
+
+
+## Template Method 模版方法
+
+### 简述
+
+定义算法框架，并将一些步骤的实现延迟到子类。通过这样做，子类可以重新定义算法的某些步骤，而不用改变算法结构。
+
+### 实现
+
+太简单了，略
+
+
+
+## Visitor 访问者
+
+### 简述
+
+使用一个访问者类，改变元素类的执行算法。通过这种方式，元素的执行算法可以随着访问者改变而改变。根据模式，元素对象已接受访问者对象，这样访问者对象就可以处理元素对象上的操作。
+
+### 实现
+
+```java
+public interface ComputerPart {
+   public void accept(ComputerPartVisitor computerPartVisitor);
+}
+
+public interface ComputerPartVisitor {
+   public void visit(Computer computer);
+   public void visit(Mouse mouse);
+   public void visit(Keyboard keyboard);
+}
+
+public class Keyboard implements ComputerPart {
+ 
+   @Override
+   public void accept(ComputerPartVisitor computerPartVisitor) {
+      computerPartVisitor.visit(this);
+   }
+}
+
+public class Mouse implements ComputerPart {
+ 
+   @Override
+   public void accept(ComputerPartVisitor computerPartVisitor) {
+      computerPartVisitor.visit(this);
+   }
+}
+
+public class Computer implements ComputerPart {
+   ComputerPart[] parts;
+ 
+   public Computer(){
+      parts = new ComputerPart[] {new Mouse(), new Keyboard()};      
+   } 
+ 
+   @Override
+   public void accept(ComputerPartVisitor computerPartVisitor) {
+      for (Computerpart part : parts) {
+         part.accept(computerPartVisitor);
+      }
+      computerPartVisitor.visit(this);
+   }
+}
+
+public class ConcreteComputerDisplayVisitor implements ComputerPartVisitor {
+ 
+   @Override
+   public void visit(Computer computer) {
+      System.out.println("Displaying Computer.");
+   }
+ 
+   @Override
+   public void visit(Mouse mouse) {
+      System.out.println("Displaying Mouse.");
+   }
+ 
+   @Override
+   public void visit(Keyboard keyboard) {
+      System.out.println("Displaying Keyboard.");
+   }
+}
+
+public class Demo {
+   public static void main(String[] args) {
+      ComputerPart computer = new Computer();
+      computer.accept(new ComputerPartDisplayVisitor());
+   }
+}
+```
+
+
+
+## Null 空对象
+
+### 简述
+
+使用什么都不做的空对象来代替 NULL。
+
+一个方法可能返回 NULL，意味着其调用端需要去检查返回值是否是 NULL。这会导致冗余的检查代码，且如某调用端忘记了做检查而直接使用，很可能抛出异常。
+
+### 实现
+
+太简单了，略
 
 
 
